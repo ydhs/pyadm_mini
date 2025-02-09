@@ -2,6 +2,7 @@ import argparse
 import shutil
 import os
 
+
 def copy_file(src, dest):
     """Копирует файл из src в dest."""
     try:
@@ -9,6 +10,7 @@ def copy_file(src, dest):
         print(f"Файл успешно скопирован из {src} в {dest}")
     except Exception as err:
         print(f"Ошибка при копировании файла: {err}")
+
 
 def delete_path(path):
     """Удаляет файл или папку."""
@@ -23,6 +25,32 @@ def delete_path(path):
             print(f"Ошибка: {path} не является файлом или папкой.")
     except Exception as err:
         print(f"Ошибка при удалении: {err}")
+
+
+def count_files_and_folders(path):
+    """Подсчитывает количество файлов и папок в указанной директории."""
+    try:
+        if not os.path.exists(path):
+            print(f"Ошибка: указанный путь {path} не существует.")
+            return
+
+        if not os.path.isdir(path):
+            print(f"Ошибка: {path} не является папкой.")
+            return
+
+        file_count = 0
+        folder_count = 0
+
+        for root, dirs, files in os.walk(path):
+            folder_count += len(dirs)
+            file_count += len(files)
+
+        print(f"Проанализировали папку: {path}")
+        print(f"Общее количество файлов: {file_count}")
+        print(f"Общее количество папок включая подпапки: {folder_count}")
+    except Exception as err:
+        print(f"Ошибка при подсчёте: {err}")
+
 
 parser = argparse.ArgumentParser(description="Простая утилита системного администрирования")
 # первый аргумент, команда что сделать
@@ -39,8 +67,15 @@ delete_parser = subparsers.add_parser("delete", help="Удаляет файл и
 delete_parser.add_argument("path", type=str, help="Путь к файлу или папке для удаления")
 delete_parser.set_defaults(func=delete_path)
 
+# парсер подсчёта файлов и папок
+count_parser = subparsers.add_parser("count", help="Подсчитывает количество файлов и папок в указанной директории")
+count_parser.add_argument("path", type=str, help="Путь к директории для подсчёта")
+count_parser.set_defaults(func=count_files_and_folders)
+
 argv = parser.parse_args()
 if argv.command == "copy":
     argv.func(argv.source, argv.destination)
 elif argv.command == "delete":
+    argv.func(argv.path)
+elif argv.command == "count":
     argv.func(argv.path)
