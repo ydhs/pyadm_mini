@@ -3,13 +3,19 @@ import shutil
 import os
 
 
-def copy_file(src, dest):
-    """Копирует файл из src в dest."""
+def copy_path(src, dest):
+    """Копирует файл или папку из src в dest"""
     try:
-        shutil.copy2(src, dest)
-        print(f"Файл успешно скопирован из {src} в {dest}")
+        if os.path.isdir(src):
+            shutil.copytree(src, dest)
+            print(f"Папка успешно скопирована из {src} в {dest}")
+        elif os.path.isfile(src):
+            shutil.copy2(src, dest)
+            print(f"Файл успешно скопирован из {src} в {dest}")
+        else:
+            print(f"Ошибка: {src} не является файлом или папкой.")
     except Exception as err:
-        print(f"Ошибка при копировании файла: {err}")
+        print(f"Ошибка при копировании: {err}")
 
 
 def delete_path(path):
@@ -28,7 +34,7 @@ def delete_path(path):
 
 
 def count_files_and_folders(path):
-    """Подсчитывает количество файлов и папок в указанной директории."""
+    """Подсчитывает количество файлов и папок"""
     try:
         if not os.path.exists(path):
             print(f"Ошибка: указанный путь {path} не существует.")
@@ -53,21 +59,17 @@ def count_files_and_folders(path):
 
 
 parser = argparse.ArgumentParser(description="Простая утилита системного администрирования")
-# первый аргумент, команда что сделать
 subparsers = parser.add_subparsers(dest='command', required=True)
 
-# парсер копирования
-copy_parser = subparsers.add_parser("copy", help="Копирует файл из src в dest (только файл, не папку)")
+copy_parser = subparsers.add_parser("copy", help="Копирует файл или папку из src в dest")
 copy_parser.add_argument("source", type=str, help="Путь источник")
 copy_parser.add_argument("destination", type=str, help="Путь назначение")
-copy_parser.set_defaults(func=copy_file)
+copy_parser.set_defaults(func=copy_path)
 
-# парсер удаления
 delete_parser = subparsers.add_parser("delete", help="Удаляет файл или папку")
 delete_parser.add_argument("path", type=str, help="Путь к файлу или папке для удаления")
 delete_parser.set_defaults(func=delete_path)
 
-# парсер подсчёта файлов и папок
 count_parser = subparsers.add_parser("count", help="Подсчитывает количество файлов и папок в указанной директории")
 count_parser.add_argument("path", type=str, help="Путь к директории для подсчёта")
 count_parser.set_defaults(func=count_files_and_folders)
