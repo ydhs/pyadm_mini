@@ -74,10 +74,11 @@ count_parser = subparsers.add_parser("count", help="Подсчитывает к�
 count_parser.add_argument("path", type=str, help="Путь к директории для подсчёта")
 count_parser.set_defaults(func=count_files_and_folders)
 
-argv = parser.parse_args()
-if argv.command == "copy":
-    argv.func(argv.source, argv.destination)
-elif argv.command == "delete":
-    argv.func(argv.path)
-elif argv.command == "count":
-    argv.func(argv.path)
+if __name__ == "__main__":
+    argv = parser.parse_args()
+    if argv.command == "copy":
+        argv.func(argv.source, argv.destination)
+    elif argv.command == "delete":
+        argv.func(argv.path)
+    elif argv.command == "count":
+        argv.func(argv.path)
